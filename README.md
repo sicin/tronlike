@@ -6,12 +6,13 @@ test game in Love2d (Lua)
 
 - [x] starting positions + and x
 - [x] trail
-- [ ] turbo
+- [x] basic turbo
 - [ ] new name and identity
+- [ ] different types of turbo based on speed, duration and step
+- [ ] main menu
 - [ ] improved sounds
 - [ ] resizable and fullscreenable
 - [ ] improved visuals
-- [ ] main menu
 - [ ] random powerup/powerdown mode
 - [ ] audio settings
 - [ ] video settings

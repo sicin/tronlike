@@ -16,7 +16,7 @@ PADDING_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
 PADDING_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 
 -- TURBO
-local normalSpeed = 0.02    -- the normal snake speed (time interval)
+local normalSpeed = 0.02    -- game runs on 60 fps, so everything over 0.017~0.018 will mean it runs every 2 frames
 local turboStepDistance = 3 -- how much more distance per move during turbo
 local turboDuration = 1.5   -- turbo lasts for 1.5 seconds
 local turboCharges = 3
