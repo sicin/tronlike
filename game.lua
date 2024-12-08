@@ -1,8 +1,8 @@
-lume = require("reload.lume")
+local lume = require("reload.lume")
 
 -- GAME STATES
-GameStates = { pause = 'pause', running = 'running', game_over = 'game over' }
-STATE = GameStates.running
+GameStates = { PAUSE = 'pause', RUNNING = 'running', GAME_OVER = 'game over' }
+STATE = GameStates.RUNNING
 
 -- GAME AREA
 WINDOW_WIDTH = 1280
@@ -15,15 +15,19 @@ BORDER_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 TILE_SIZE = 24
 MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
 MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
+SMALL_TILE_SIZE = 6
+MAX_SMALL_TILES_X = GAME_AREA_WIDTH / SMALL_TILE_SIZE
+MAX_SMALL_TILES_Y = GAME_AREA_HEIGHT / SMALL_TILE_SIZE
 
 -- SNAKE
 -- SNAKE_SIZE = 6 <--- tyle powinno byc, ale problem z przechodzeniemdalej
-SNAKE_SIZE = 6
+SNAKE_SIZE = SMALL_TILE_SIZE
 SNAKE_SPEED = 0.5
 -- zaczynamy z lewego górnego rogu jeśli snakeX, snakeY = BORDER_X / SNAKE_SIZE, BORDER_Y / SNAKE_SIZE
 SNAKE_STARTING_POS_X = BORDER_X / SNAKE_SIZE
 SNAKE_STARTING_POS_Y = BORDER_Y / SNAKE_SIZE
 local snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
+local snakeTimer = 0
 
 -- DIRECTIONS
 UP = false
@@ -43,6 +47,7 @@ local function drawMinimap()
     love.graphics.rectangle("fill", (snakeX / 1.5) - 21, (snakeY / 1.5) - 5, 6, 6)
     -- minimap
     -- powinno być lepiej dostosowane do wymiarów GAME_AREA
+    love.graphics.setColor(1, 0, 1, 0.5)
     love.graphics.rectangle("line", 2, 2, TILE_SIZE * 4, TILE_SIZE * 3)
 end
 
@@ -53,10 +58,10 @@ local function drawSnake()
 end
 
 local function drawGrid()
-    love.graphics.setColor(1, 0, 0, 0.3)
+    love.graphics.setColor(1, 0, 1, 1)
     love.graphics.rectangle("line", BORDER_X, BORDER_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
 
-    love.graphics.setColor(0, 0, 1, 0.3)
+    love.graphics.setColor(0, 0, 1, 0.5)
     for y = 1, MAX_TILES_Y do
         for x = 1, MAX_TILES_X do
             love.graphics.rectangle('line', (x - 1) * TILE_SIZE + BORDER_X, (y - 1) * TILE_SIZE + BORDER_Y, TILE_SIZE,
@@ -65,41 +70,63 @@ local function drawGrid()
     end
 end
 
+local function drawSmallGrid()
+    -- love.graphics.setColor(1, 1, 1, 1)
+    -- love.graphics.rectangle("line", BORDER_X, BORDER_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
+
+    love.graphics.setColor(1, 1, 1, 0.1)
+    for y = 1, MAX_SMALL_TILES_Y do
+        for x = 1, MAX_SMALL_TILES_X do
+            love.graphics.rectangle('line', (x - 1) * SMALL_TILE_SIZE + BORDER_X, (y - 1) * SMALL_TILE_SIZE + BORDER_Y,
+                SMALL_TILE_SIZE, SMALL_TILE_SIZE)
+        end
+    end
+end
+
 function game_draw()
     drawGrid()
+    drawSmallGrid()
     drawSnake()
     drawMinimap()
 end
 
 function game_update(dt)
-    love.graphics.print(dt, 0, 0)
-    if UP then
-        if dirY ~= 1 then
-            dirX, dirY = 0, -1
+    snakeTimer = snakeTimer + dt
+    if snakeTimer >= SNAKE_SPEED then
+        if UP then
+            if dirY ~= 1 then
+                dirX, dirY = 0, -1
+                snakeY = snakeY - 1
+            else
+                -- cannot go downwards if is up
+            end
+        elseif DOWN then
+            if dirY ~= -1 then
+                dirX, dirY = 0, 1
+                snakeY = snakeY + 1
+            else
+            end
+        elseif LEFT then
+            if dirX ~= 1 then
+                dirX, dirY = -1, 0
+                snakeX = snakeX - 1
+            else
+                -- cannot go rightwards if is left
+            end
+        elseif RIGHT then
+            if dirX ~= -1 then
+                dirX, dirY = 1, 0
+                snakeX = snakeX + 1
+            else
+            end
         else
-            -- cannot go downwards if is up
+            dirX, dirY = 0, 0
         end
-    elseif DOWN then
-        if dirY ~= -1 then
-            dirX, dirY = 0, 1
-        else
-        end
-    elseif LEFT then
-        if dirX ~= 1 then
-            dirX, dirY = -1, 0
-        else
-            -- cannot go rightwards if is left
-        end
-    elseif RIGHT then
-        if dirX ~= -1 then
-            dirX, dirY = 1, 0
-        else
-        end
-    else
-        dirX, dirY = 0, 0
+        snakeX = snakeX + dirX * SNAKE_SPEED
+        snakeY = snakeY + dirY * SNAKE_SPEED
+        snakeTimer = 0
     end
-    snakeX = snakeX + dirX * SNAKE_SPEED
-    snakeY = snakeY + dirY * SNAKE_SPEED
+
 
     -- for now go through to the other side
     -- if snakeX < 0 then
@@ -121,7 +148,7 @@ function game_restart()
     -- tail = {}
     UP, DOWN, LEFT, RIGHT = false, false, false, true
     -- tail_length = 0
-    STATE = GameStates.running
+    STATE = GameStates.RUNNING
 end
 
 local prevUP, prevDOWN, prevLEFT, prevRIGHT = false, false, false, false
@@ -129,10 +156,10 @@ local prevUP, prevDOWN, prevLEFT, prevRIGHT = false, false, false, false
 function game_pause()
     prevUP, prevDOWN, prevLEFT, prevRIGHT = UP, DOWN, LEFT, RIGHT
     UP, DOWN, LEFT, RIGHT = false, false, false, false
-    STATE = GameStates.pause
+    STATE = GameStates.PAUSE
 end
 
 function game_unpause()
     UP, DOWN, LEFT, RIGHT = prevUP, prevDOWN, prevLEFT, prevRIGHT
-    STATE = GameStates.running
+    STATE = GameStates.RUNNING
 end
