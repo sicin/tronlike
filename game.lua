@@ -26,6 +26,7 @@ local MINIMAP_X = 2
 local MINIMAP_Y = 2
 local MINIMAP_WIDTH = 96 -- for example
 local MINIMAP_HEIGHT = MINIMAP_WIDTH / areaRatio
+local MINIMAP_SNAKE_SIZE = SMALL_TILE_SIZE
 
 local minimapScaleX = MINIMAP_WIDTH / GAME_AREA_WIDTH
 local minimapScaleY = MINIMAP_HEIGHT / GAME_AREA_HEIGHT
@@ -46,15 +47,23 @@ local dirY = 0
 -- Drawing functions
 local function drawMinimap()
     love.graphics.setColor(1, 0, 1, 0.5)
-    love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH, MINIMAP_HEIGHT)
+    love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH + MINIMAP_SNAKE_SIZE,
+        MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE)
 
     love.graphics.setColor(0, 1, 0, 1)
-    local snakeWorldX = snakeX * SNAKE_SIZE
-    local snakeWorldY = snakeY * SNAKE_SIZE
-    local minimapSnakeX = (MINIMAP_X + snakeWorldX) * minimapScaleX
-    local minimapSnakeY = (MINIMAP_Y + snakeWorldY) * minimapScaleY
-    love.graphics.rectangle("fill", minimapSnakeX, minimapSnakeY, 3, 3)
+
+    -- Convert snake position into game-area coordinates
+    local snakeWorldX = (snakeX * SNAKE_SIZE) - BORDER_X
+    local snakeWorldY = (snakeY * SNAKE_SIZE) - BORDER_Y
+
+    -- Scale these coordinates to the minimap
+    local minimapSnakeX = math.floor(MINIMAP_X + snakeWorldX * minimapScaleX)
+    local minimapSnakeY = math.floor(MINIMAP_Y + snakeWorldY * minimapScaleY)
+
+    -- Draw snake on minimap
+    love.graphics.rectangle("fill", minimapSnakeX, minimapSnakeY, MINIMAP_SNAKE_SIZE, MINIMAP_SNAKE_SIZE)
 end
+
 
 local function drawSnake()
     love.graphics.setColor(0, 1, 0, 1)
