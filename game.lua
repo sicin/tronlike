@@ -7,18 +7,22 @@ CURRENT_STATE = GAME_STATE.RUNNING
 -- GAME AREA CONFIG
 local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
-local GAME_AREA_WIDTH = 864
-local GAME_AREA_HEIGHT = 576
-local PADDING_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
-local PADDING_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
+GAME_AREA_WIDTH = 864
+GAME_AREA_HEIGHT = 576
+PADDING_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
+PADDING_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 
--- TILE SIZES
+-- SNAKE CONFIG
+local SNAKE_SIZE = 6
+local SNAKE_SPEED = 0.02
+local snakeTimer = 0
+local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
+local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
+
+-- GAME AREA GRID
 local TILE_SIZE = 24
-local SMALL_TILE_SIZE = 6
 local MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
 local MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
-local MAX_SMALL_TILES_X = GAME_AREA_WIDTH / SMALL_TILE_SIZE
-local MAX_SMALL_TILES_Y = GAME_AREA_HEIGHT / SMALL_TILE_SIZE
 
 -- MINIMAP CONFIG
 local areaRatio = GAME_AREA_WIDTH / GAME_AREA_HEIGHT
@@ -26,22 +30,31 @@ local MINIMAP_X = 2
 local MINIMAP_Y = 2
 local MINIMAP_WIDTH = 96
 local MINIMAP_HEIGHT = MINIMAP_WIDTH / areaRatio
-local MINIMAP_SNAKE_SIZE = SMALL_TILE_SIZE / 2
+local MINIMAP_SNAKE_SIZE = SNAKE_SIZE / 2
 local minimapScaleX = MINIMAP_WIDTH / GAME_AREA_WIDTH
 local minimapScaleY = MINIMAP_HEIGHT / GAME_AREA_HEIGHT
 
--- SNAKE CONFIG
-local SNAKE_SIZE = SMALL_TILE_SIZE
-local SNAKE_SPEED = 0.02
--- Instead of starting at PADDING_X / SNAKE_SIZE, we start at 0,0 inside the game area.
-local snakeX, snakeY = 0, 0
-local snakeTimer = 0
-local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
-local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
 
--- DIRECTIONS
-local snakeDirX = 1 -- start moving right by default
-local snakeDirY = 0
+
+-- STARTING POSITIONS
+local STARTING_POSITIONS = {
+    SHAPE_X = {
+        { x = 30,        y = 30,        dirX = 1,  dirY = 0 }, -- Top-left, moving right
+        { x = maxX - 30, y = 30,        dirX = -1, dirY = 0 }, -- Top-right, moving left
+        { x = 30,        y = maxY - 30, dirX = 1,  dirY = 0 }, -- Bottom-left, moving right
+        { x = maxX - 30, y = maxY - 30, dirX = -1, dirY = 0 }  -- Bottom-right, moving left
+    }
+    ,
+    ['SHAPE_+'] = {
+        { x = 20,                   y = math.floor(maxY / 2), dirX = 1,  dirY = 0 }, -- Left, moving right
+        { x = math.floor(maxX / 2), y = 5,                    dirX = 0,  dirY = 1 }, -- Top, moving down
+        { x = maxX - 20,            y = math.floor(maxY / 2), dirX = -1, dirY = 0 }, -- Right, moving left
+        { x = math.floor(maxX / 2), y = maxY - 5,             dirX = 0,  dirY = -1 } -- Bottom, moving up
+    }
+}
+local chosenPosition = STARTING_POSITIONS['SHAPE_X'][1]
+local snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX,
+    chosenPosition.dirY
 
 -- Drawing functions
 
@@ -86,21 +99,11 @@ local function drawGrid()
     end
 end
 
-local function drawSmallGrid()
-    love.graphics.setColor(1, 1, 1, 0.1)
-    for y = 1, MAX_SMALL_TILES_Y do
-        for x = 1, MAX_SMALL_TILES_X do
-            love.graphics.rectangle('line', (x - 1) * SMALL_TILE_SIZE + PADDING_X, (y - 1) * SMALL_TILE_SIZE + PADDING_Y,
-                SMALL_TILE_SIZE, SMALL_TILE_SIZE)
-        end
-    end
-end
 
 -- Public Functions
 
 function game_draw()
     drawGrid()
-    -- drawSmallGrid()
     drawSnake()
     drawMinimap()
 end
@@ -143,8 +146,8 @@ function game_update(dt)
 end
 
 function game_restart()
-    snakeX, snakeY = 0, 0       -- Restart snake at top-left of playable area
-    snakeDirX, snakeDirY = 1, 0 -- start moving right by default
+    snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX,
+        chosenPosition.dirY
     CURRENT_STATE = GAME_STATE.RUNNING
 end
 

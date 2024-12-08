@@ -1,4 +1,5 @@
 require('game')
+require('visualdebug')
 
 function love.load()
     love.window.setPosition(500, 50, 1)
@@ -35,6 +36,9 @@ function love.draw()
         love.graphics.print(text, (love.graphics.getWidth() - textWidth) / 2,
             (love.graphics.getHeight() - fontHeight) / 2, 0)
     end
+    -- visual debug
+    -- drawSmallGrid()
+    -- end visual debug
 end
 
 function love.update(dt)

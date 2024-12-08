@@ -4,21 +4,24 @@ test game in Love2d (Lua)
 
 ### To do
 
-- [ ] starting positions + and x
+- [x] starting positions + and x
 - [ ] trail + turbo
+- [ ] new name and identity
 - [ ] improved sounds
+- [ ] resizable and fullscreenable
 - [ ] improved visuals
-- [ ] points
 - [ ] main menu
+- [ ] random powerup/powerdown mode
 - [ ] audio settings
 - [ ] video settings
 - [ ] crash particles and other effects
 - [ ] fps, ping indicator
 - [ ] key mapping settings
 - [ ] multiplayer
+- [ ] persistent score
+- [ ] ELO + matchmaking
 - [ ] AI enemy
 - [ ] 2 players single player
-- [ ] ELO + matchmaking
 - [ ] leaderboard
 
 ### Resources
