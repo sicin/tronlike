@@ -11,13 +11,24 @@ GAME_AREA_WIDTH = 864
 GAME_AREA_HEIGHT = 576
 BORDER_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
 BORDER_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
-
 TILE_SIZE = 24
 MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
 MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
+
+-- SMALL TILES GRID
 SMALL_TILE_SIZE = 6
 MAX_SMALL_TILES_X = GAME_AREA_WIDTH / SMALL_TILE_SIZE
 MAX_SMALL_TILES_Y = GAME_AREA_HEIGHT / SMALL_TILE_SIZE
+
+-- MINIMAP
+local areaRatio = GAME_AREA_WIDTH / GAME_AREA_HEIGHT
+local MINIMAP_X = 2
+local MINIMAP_Y = 2
+local MINIMAP_WIDTH = 96 -- for example
+local MINIMAP_HEIGHT = MINIMAP_WIDTH / areaRatio
+
+local minimapScaleX = MINIMAP_WIDTH / GAME_AREA_WIDTH
+local minimapScaleY = MINIMAP_HEIGHT / GAME_AREA_HEIGHT
 
 -- SNAKE
 SNAKE_SIZE = SMALL_TILE_SIZE
@@ -35,10 +46,14 @@ local dirY = 0
 -- Drawing functions
 local function drawMinimap()
     love.graphics.setColor(1, 0, 1, 0.5)
-    love.graphics.rectangle("line", 2, 2, TILE_SIZE * 4, TILE_SIZE * 3)
+    love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH, MINIMAP_HEIGHT)
 
     love.graphics.setColor(0, 1, 0, 1)
-    love.graphics.rectangle("fill", (snakeX / 1.5) - 21, (snakeY / 1.5) - 5, 6, 6)
+    local snakeWorldX = snakeX * SNAKE_SIZE
+    local snakeWorldY = snakeY * SNAKE_SIZE
+    local minimapSnakeX = (MINIMAP_X + snakeWorldX) * minimapScaleX
+    local minimapSnakeY = (MINIMAP_Y + snakeWorldY) * minimapScaleY
+    love.graphics.rectangle("fill", minimapSnakeX, minimapSnakeY, 3, 3)
 end
 
 local function drawSnake()
