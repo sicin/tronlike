@@ -4,6 +4,12 @@ function love.load()
     love.window.setPosition(500, 50, 1)
     placeholderImage = love.graphics.newImage("placeholder.png")
 
+    -- https://freesound.org/people/DeezSoundzTho/sounds/407431/
+    crash = love.audio.newSource("sounds/bottle-break.wav", "static")
+    crash:setVolume(0.5)
+    -- https://freesound.org/people/Joao_Janz/sounds/482664/
+    driving = love.audio.newSource("sounds/car-loop.wav", "static")
+
     futuristicFont = love.graphics.newFont("fonts/BrunoAce-Regular.ttf", 96)
     fontHeight = futuristicFont:getHeight()
     love.graphics.setFont(futuristicFont)
@@ -58,7 +64,7 @@ function love.keypressed(key)
     elseif key == 'p' then
         if CURRENT_STATE == GAME_STATE.RUNNING then
             game_pause()
-        else
+        elseif CURRENT_STATE == GAME_STATE.PAUSE then
             game_unpause()
         end
     end

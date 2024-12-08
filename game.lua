@@ -107,9 +107,11 @@ end
 
 function game_update(dt)
     if CURRENT_STATE ~= GAME_STATE.RUNNING then
+        driving:pause()
         return
     end
 
+    driving:play()
     snakeTimer = snakeTimer + dt
     if snakeTimer >= SNAKE_SPEED then
         -- Move exactly one tile in the current direction
@@ -120,23 +122,22 @@ function game_update(dt)
         snakeTimer = 0
 
         -- it might be too hard if this is outside of snake timer
-
-        if snakeX < 0 then
-            -- event though snake head is outside, show as if it hit the wall
-            snakeX = snakeX + 1
+        if snakeX < 0 or snakeX > maxX or snakeY < 0 or snakeY > maxY then
+            if snakeX < 0 then
+                -- even though snake head is outside, show as if it hit the wall
+                snakeX = snakeX + 1
+            end
+            if snakeX > maxX then
+                snakeX = snakeX - 1
+            end
+            if snakeY < 0 then
+                snakeY = snakeY + 1
+            end
+            if snakeY > maxY then
+                snakeY = snakeY - 1
+            end
             CURRENT_STATE = GAME_STATE.GAME_OVER
-        end
-        if snakeX > maxX then
-            snakeX = snakeX - 1
-            CURRENT_STATE = GAME_STATE.GAME_OVER
-        end
-        if snakeY < 0 then
-            snakeY = snakeY + 1
-            CURRENT_STATE = GAME_STATE.GAME_OVER
-        end
-        if snakeY > maxY then
-            snakeY = snakeY - 1
-            CURRENT_STATE = GAME_STATE.GAME_OVER
+            crash:play()
         end
     end
 end
