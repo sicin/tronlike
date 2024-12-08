@@ -2,7 +2,26 @@
 
 test game in Love2d (Lua)
 
-# Resources
+### To do
+
+- [ ] starting positions + and x
+- [ ] trail + turbo
+- [ ] improved sounds
+- [ ] improved visuals
+- [ ] points
+- [ ] main menu
+- [ ] audio settings
+- [ ] video settings
+- [ ] crash particles and other effects
+- [ ] fps, ping indicator
+- [ ] key mapping settings
+- [ ] multiplayer
+- [ ] AI enemy
+- [ ] 2 players single player
+- [ ] ELO + matchmaking
+- [ ] leaderboard
+
+### Resources
 
 [Documentation](https://love2d.org/wiki/Main_Page)
 
