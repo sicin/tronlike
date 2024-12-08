@@ -9,8 +9,8 @@ local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
 local GAME_AREA_WIDTH = 864
 local GAME_AREA_HEIGHT = 576
-local BORDER_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
-local BORDER_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
+local PADDING_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
+local PADDING_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 
 -- TILE SIZES
 local TILE_SIZE = 24
@@ -33,9 +33,8 @@ local minimapScaleY = MINIMAP_HEIGHT / GAME_AREA_HEIGHT
 -- SNAKE CONFIG
 local SNAKE_SIZE = SMALL_TILE_SIZE
 local SNAKE_SPEED = 0.02
-local SNAKE_STARTING_POS_X = BORDER_X / SNAKE_SIZE
-local SNAKE_STARTING_POS_Y = BORDER_Y / SNAKE_SIZE
-local snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
+-- Instead of starting at PADDING_X / SNAKE_SIZE, we start at 0,0 inside the game area.
+local snakeX, snakeY = 0, 0
 local snakeTimer = 0
 
 -- DIRECTIONS
@@ -51,9 +50,10 @@ local function drawMinimap()
         MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE)
 
     love.graphics.setColor(0, 1, 0, 1)
-    -- Convert snake position into game-area coordinates
-    local snakeWorldX = (snakeX * SNAKE_SIZE) - BORDER_X
-    local snakeWorldY = (snakeY * SNAKE_SIZE) - BORDER_Y
+    -- Since snakeX, snakeY are now relative to the game area (0,0 at top-left),
+    -- we can directly scale them:
+    local snakeWorldX = snakeX * SNAKE_SIZE
+    local snakeWorldY = snakeY * SNAKE_SIZE
     local minimapSnakeX = math.floor(MINIMAP_X + snakeWorldX * minimapScaleX)
     local minimapSnakeY = math.floor(MINIMAP_Y + snakeWorldY * minimapScaleY)
 
@@ -63,18 +63,19 @@ end
 
 local function drawSnake()
     love.graphics.setColor(0, 1, 0, 1)
-    -- Add BORDER_X, BORDER_Y here since snakeX, snakeY are tile-based coordinates starting from top-left of window
-    love.graphics.rectangle("fill", snakeX * SNAKE_SIZE, snakeY * SNAKE_SIZE, SNAKE_SIZE, SNAKE_SIZE)
+    -- Add PADDING_X, PADDING_Y since snakeX, snakeY are now purely game-area coordinates
+    love.graphics.rectangle("fill", PADDING_X + snakeX * SNAKE_SIZE, PADDING_Y + snakeY * SNAKE_SIZE, SNAKE_SIZE,
+        SNAKE_SIZE)
 end
 
 local function drawGrid()
     love.graphics.setColor(1, 0, 1, 1)
-    love.graphics.rectangle("line", BORDER_X, BORDER_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
+    love.graphics.rectangle("line", PADDING_X, PADDING_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
 
     love.graphics.setColor(0, 0, 1, 0.5)
     for y = 1, MAX_TILES_Y do
         for x = 1, MAX_TILES_X do
-            love.graphics.rectangle('line', (x - 1) * TILE_SIZE + BORDER_X, (y - 1) * TILE_SIZE + BORDER_Y, TILE_SIZE,
+            love.graphics.rectangle('line', (x - 1) * TILE_SIZE + PADDING_X, (y - 1) * TILE_SIZE + PADDING_Y, TILE_SIZE,
                 TILE_SIZE)
         end
     end
@@ -84,7 +85,7 @@ local function drawSmallGrid()
     love.graphics.setColor(1, 1, 1, 0.1)
     for y = 1, MAX_SMALL_TILES_Y do
         for x = 1, MAX_SMALL_TILES_X do
-            love.graphics.rectangle('line', (x - 1) * SMALL_TILE_SIZE + BORDER_X, (y - 1) * SMALL_TILE_SIZE + BORDER_Y,
+            love.graphics.rectangle('line', (x - 1) * SMALL_TILE_SIZE + PADDING_X, (y - 1) * SMALL_TILE_SIZE + PADDING_Y,
                 SMALL_TILE_SIZE, SMALL_TILE_SIZE)
         end
     end
@@ -113,17 +114,30 @@ function game_update(dt)
         -- Reset the timer
         snakeTimer = 0
     end
-
-    -- local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
-    -- local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
-    -- if snakeX < 0 then snakeX = maxX end
-    -- if snakeX > maxX then snakeX = 0 end
-    -- if snakeY < 0 then snakeY = maxY end
-    -- if snakeY > maxY then snakeY = 0 end
+    -- not sure if it should be inside snakeTimer, probably not?
+    local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
+    local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
+    if snakeX < 0 then
+        -- event though it's outside, don't show as if it were
+        snakeX = snakeX + 1
+        CURRENT_STATE = GAME_STATE.GAME_OVER
+    end
+    if snakeX > maxX then
+        snakeX = snakeX - 1
+        CURRENT_STATE = GAME_STATE.GAME_OVER
+    end
+    if snakeY < 0 then
+        snakeY = snakeY + 1
+        CURRENT_STATE = GAME_STATE.GAME_OVER
+    end
+    if snakeY > maxY then
+        snakeY = snakeY - 1
+        CURRENT_STATE = GAME_STATE.GAME_OVER
+    end
 end
 
 function game_restart()
-    snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
+    snakeX, snakeY = 0, 0       -- Restart snake at top-left of playable area
     snakeDirX, snakeDirY = 1, 0 -- start moving right by default
     CURRENT_STATE = GAME_STATE.RUNNING
 end
