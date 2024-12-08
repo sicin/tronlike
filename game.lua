@@ -46,12 +46,12 @@ local snakeDirY = 0
 -- Drawing functions
 
 local function drawMinimap()
-    love.graphics.setColor(1, 0, 1, 0.5)
+    love.graphics.setColor(1, 1, 1, 0.5)
     -- Drawing the minimap outline
     love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH + MINIMAP_SNAKE_SIZE,
         MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE)
 
-    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.setColor(0, 1, 0, 0.8)
     -- Since snakeX, snakeY are now relative to the game area (0,0 at top-left),
     -- we can directly scale them:
     local snakeWorldX = snakeX * SNAKE_SIZE
@@ -71,10 +71,13 @@ local function drawSnake()
 end
 
 local function drawGrid()
-    love.graphics.setColor(1, 0, 1, 1)
+    love.graphics.setColor(1, 1, 1, 0.8)
     love.graphics.rectangle("line", PADDING_X, PADDING_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
 
-    love.graphics.setColor(0, 0, 1, 0.5)
+    love.graphics.setColor(1, 1, 1, 0.08)
+    love.graphics.rectangle("fill", PADDING_X, PADDING_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
+
+    love.graphics.setColor(1, 1, 1, 0.10)
     for y = 1, MAX_TILES_Y do
         for x = 1, MAX_TILES_X do
             love.graphics.rectangle('line', (x - 1) * TILE_SIZE + PADDING_X, (y - 1) * TILE_SIZE + PADDING_Y, TILE_SIZE,
