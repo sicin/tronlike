@@ -1,17 +1,17 @@
 require('game')
-require('visualdebug')
+require('lib.visualdebug.visualDebug')
 
 function love.load()
     love.window.setPosition(500, 50, 1)
-    placeholderImage = love.graphics.newImage("placeholder.png")
+    placeholderImage = love.graphics.newImage("assets/images/placeholder.png")
 
     -- https://freesound.org/people/DeezSoundzTho/sounds/407431/
-    crash = love.audio.newSource("sounds/bottle-break.wav", "static")
+    crash = love.audio.newSource("assets/audio/bottle-break.wav", "static")
     crash:setVolume(0.5)
     -- https://freesound.org/people/Joao_Janz/sounds/482664/
-    driving = love.audio.newSource("sounds/car-loop.wav", "static")
+    driving = love.audio.newSource("assets/audio/car-loop.wav", "static")
 
-    futuristicFont = love.graphics.newFont("fonts/BrunoAce-Regular.ttf", 96)
+    futuristicFont = love.graphics.newFont("assets/fonts/BrunoAce-Regular.ttf", 96)
     fontHeight = futuristicFont:getHeight()
     love.graphics.setFont(futuristicFont)
 end
@@ -43,7 +43,7 @@ end
 
 function love.update(dt)
     game_update(dt)
-    require("reload.lurker").update()
+    require("lib.reload.lurker").update()
 end
 
 function love.keypressed(key)

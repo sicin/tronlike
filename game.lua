@@ -1,4 +1,4 @@
-local lume = require("reload.lume")
+local lume = require("lib.reload.lume")
 
 -- GAME STATES
 GAME_STATE = { PAUSE = 'pause', RUNNING = 'running', GAME_OVER = 'game over' }
