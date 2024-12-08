@@ -6,8 +6,13 @@ function drawSmallGrid()
     love.graphics.setColor(1, 1, 1, 0.1)
     for y = 1, MAX_SMALL_TILES_Y do
         for x = 1, MAX_SMALL_TILES_X do
-            love.graphics.rectangle('line', (x - 1) * SMALL_TILE_SIZE + PADDING_X, (y - 1) * SMALL_TILE_SIZE + PADDING_Y,
-                SMALL_TILE_SIZE, SMALL_TILE_SIZE)
+            love.graphics.rectangle(
+                "line",
+                (x - 1) * SMALL_TILE_SIZE + PADDING_X,
+                (y - 1) * SMALL_TILE_SIZE + PADDING_Y,
+                SMALL_TILE_SIZE,
+                SMALL_TILE_SIZE
+            )
         end
     end
 end

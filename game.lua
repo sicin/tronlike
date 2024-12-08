@@ -1,7 +1,7 @@
 local lume = require("lib.reload.lume")
 
 -- GAME STATES
-GAME_STATE = { PAUSE = 'pause', RUNNING = 'running', GAME_OVER = 'game over' }
+GAME_STATE = { PAUSE = "pause", RUNNING = "running", GAME_OVER = "game over" }
 CURRENT_STATE = GAME_STATE.RUNNING
 -- needed to not hit itself when going one way and clicking the opposite key in combination with other direction
 local directionChangedThisFrame = false
@@ -42,18 +42,20 @@ local STARTING_POSITIONS = {
         { x = 30,        y = 30,        dirX = 1,  dirY = 0 }, -- Top-left, moving right
         { x = maxX - 30, y = 30,        dirX = -1, dirY = 0 }, -- Top-right, moving left
         { x = 30,        y = maxY - 30, dirX = 1,  dirY = 0 }, -- Bottom-left, moving right
-        { x = maxX - 30, y = maxY - 30, dirX = -1, dirY = 0 }  -- Bottom-right, moving left
-    }
-    ,
-    ['SHAPE_+'] = {
+        { x = maxX - 30, y = maxY - 30, dirX = -1, dirY = 0 } -- Bottom-right, moving left
+    },
+    ["SHAPE_+"] = {
         { x = 20,                   y = math.floor(maxY / 2), dirX = 1,  dirY = 0 }, -- Left, moving right
         { x = math.floor(maxX / 2), y = 5,                    dirX = 0,  dirY = 1 }, -- Top, moving down
         { x = maxX - 20,            y = math.floor(maxY / 2), dirX = -1, dirY = 0 }, -- Right, moving left
         { x = math.floor(maxX / 2), y = maxY - 5,             dirX = 0,  dirY = -1 } -- Bottom, moving up
     }
 }
-local chosenPosition = STARTING_POSITIONS['SHAPE_X'][1]
-local snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX,
+local chosenPosition = STARTING_POSITIONS["SHAPE_X"][1]
+local snakeX, snakeY, snakeDirX, snakeDirY =
+    chosenPosition.x,
+    chosenPosition.y,
+    chosenPosition.dirX,
     chosenPosition.dirY
 
 -- Snake trail
@@ -72,8 +74,13 @@ snakeTrailSet[posKey(snakeX, snakeY)] = true
 local function drawMinimap()
     love.graphics.setColor(1, 1, 1, 0.5)
     -- Draw minimap boundary
-    love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH + MINIMAP_SNAKE_SIZE,
-        MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE)
+    love.graphics.rectangle(
+        "line",
+        MINIMAP_X,
+        MINIMAP_Y,
+        MINIMAP_WIDTH + MINIMAP_SNAKE_SIZE,
+        MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE
+    )
 
     -- Loop over the snake trail
     love.graphics.setColor(0, 1, 0, 0.7)
@@ -92,16 +99,33 @@ local function drawSnake()
         if i == #snakeTrail then
             -- Draw the head
             love.graphics.setColor(0, 0, 1, 1)
-            love.graphics.rectangle("line", PADDING_X + segment.x * SNAKE_SIZE, PADDING_Y + segment.y * SNAKE_SIZE,
-                SNAKE_SIZE, SNAKE_SIZE, 10, 10)
+            love.graphics.rectangle(
+                "line",
+                PADDING_X + segment.x * SNAKE_SIZE,
+                PADDING_Y + segment.y * SNAKE_SIZE,
+                SNAKE_SIZE,
+                SNAKE_SIZE,
+                10,
+                10
+            )
             love.graphics.setColor(0, 1, 0, 0.5)
-            love.graphics.rectangle("fill", PADDING_X + segment.x * SNAKE_SIZE, PADDING_Y + segment.y * SNAKE_SIZE,
-                SNAKE_SIZE, SNAKE_SIZE)
+            love.graphics.rectangle(
+                "fill",
+                PADDING_X + segment.x * SNAKE_SIZE,
+                PADDING_Y + segment.y * SNAKE_SIZE,
+                SNAKE_SIZE,
+                SNAKE_SIZE
+            )
         else
             -- Draw the body
             love.graphics.setColor(0, 1, 0, 0.9)
-            love.graphics.rectangle("fill", PADDING_X + segment.x * SNAKE_SIZE, PADDING_Y + segment.y * SNAKE_SIZE,
-                SNAKE_SIZE, SNAKE_SIZE)
+            love.graphics.rectangle(
+                "fill",
+                PADDING_X + segment.x * SNAKE_SIZE,
+                PADDING_Y + segment.y * SNAKE_SIZE,
+                SNAKE_SIZE,
+                SNAKE_SIZE
+            )
         end
     end
 end
@@ -116,8 +140,13 @@ local function drawGrid()
     love.graphics.setColor(1, 1, 1, 0.10)
     for y = 1, MAX_TILES_Y do
         for x = 1, MAX_TILES_X do
-            love.graphics.rectangle('line', (x - 1) * TILE_SIZE + PADDING_X, (y - 1) * TILE_SIZE + PADDING_Y, TILE_SIZE,
-                TILE_SIZE)
+            love.graphics.rectangle(
+                "line",
+                (x - 1) * TILE_SIZE + PADDING_X,
+                (y - 1) * TILE_SIZE + PADDING_Y,
+                TILE_SIZE,
+                TILE_SIZE
+            )
         end
     end
 end
@@ -170,8 +199,7 @@ function game_update(dt)
 end
 
 function game_restart()
-    snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX,
-        chosenPosition.dirY
+    snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX, chosenPosition.dirY
     snakeTrail = {}
     snakeTrailSet = {}
     snakeTrail[#snakeTrail + 1] = { x = snakeX, y = snakeY }

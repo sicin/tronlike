@@ -4,6 +4,6 @@ function love.conf(tbl)
     tbl.window.height = 720
     tbl.window.resizable = false
     tbl.window.fullscreen = false
-    tbl.window.title = 'Tronlike game'
+    tbl.window.title = "Tronlike game"
     tbl.window.console = true
 end

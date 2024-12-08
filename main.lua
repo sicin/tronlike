@@ -1,5 +1,5 @@
-require('game')
-require('lib.visualdebug.visualDebug')
+require("game")
+require("lib.visualdebug.visualDebug")
 
 function love.load()
     love.window.setPosition(500, 50, 1)
@@ -25,16 +25,24 @@ function love.draw()
         love.graphics.setColor(0, 1, 0, 1)
         local text = "Paused..."
         local textWidth = futuristicFont:getWidth(text)
-        love.graphics.print(text, (love.graphics.getWidth() - textWidth) / 2,
-            (love.graphics.getHeight() - fontHeight) / 2, 0)
+        love.graphics.print(
+            text,
+            (love.graphics.getWidth() - textWidth) / 2,
+            (love.graphics.getHeight() - fontHeight) / 2,
+            0
+        )
     end
 
     if CURRENT_STATE == GAME_STATE.GAME_OVER then
         love.graphics.setColor(1, 0, 0, 1)
         local text = "You lost!"
         local textWidth = futuristicFont:getWidth(text)
-        love.graphics.print(text, (love.graphics.getWidth() - textWidth) / 2,
-            (love.graphics.getHeight() - fontHeight) / 2, 0)
+        love.graphics.print(
+            text,
+            (love.graphics.getWidth() - textWidth) / 2,
+            (love.graphics.getHeight() - fontHeight) / 2,
+            0
+        )
     end
     -- visual debug
     -- drawSmallGrid()
@@ -47,25 +55,25 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-    if key == 'escape' then
+    if key == "escape" then
         love.event.quit()
     end
 
     if CURRENT_STATE == GAME_STATE.RUNNING then
-        if key == 'left' then
+        if key == "left" then
             game_setDirection(-1, 0)
-        elseif key == 'right' then
+        elseif key == "right" then
             game_setDirection(1, 0)
-        elseif key == 'up' then
+        elseif key == "up" then
             game_setDirection(0, -1)
-        elseif key == 'down' then
+        elseif key == "down" then
             game_setDirection(0, 1)
         end
     end
 
-    if key == 'space' then
+    if key == "space" then
         game_restart()
-    elseif key == 'p' then
+    elseif key == "p" then
         if CURRENT_STATE == GAME_STATE.RUNNING then
             game_pause()
         elseif CURRENT_STATE == GAME_STATE.PAUSE then
