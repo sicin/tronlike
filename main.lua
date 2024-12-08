@@ -1,6 +1,5 @@
 require('game')
 
-
 function love.load()
     love.window.setPosition(500, 50, 1)
 end
@@ -20,6 +19,7 @@ end
 
 function love.update(dt)
     game_update(dt)
+    require("reload.lurker").update()
 end
 
 function love.keypressed(key)

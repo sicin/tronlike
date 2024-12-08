@@ -12,6 +12,12 @@ test game in Love2d (Lua)
 
 [Game Development with LÖVE 2D and Lua – Full Course](https://www.youtube.com/watch?v=I549C6SmUnk)
 
-[ Make Games with Love2D - Setup, Structure, and Development Basics](https://www.youtube.com/watch?v=wttKHL90Ank)
+[Make Games with Love2D - Setup, Structure, and Development Basics](https://www.youtube.com/watch?v=wttKHL90Ank)
 
 [FL Tron](https://www.crazygames.com/game/fl-tron)
+
+[Flash-Cycle gameplay](https://www.youtube.com/watch?v=i5CumqvRVM8)
+
+[Hot reload](https://github.com/rxi/lurker)
+
+[Utiles + lurker's dependency](https://github.com/rxi/lume)

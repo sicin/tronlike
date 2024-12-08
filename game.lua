@@ -1,3 +1,5 @@
+lume = require("reload.lume")
+
 -- game states
 GameStates = { pause = 'pause', running = 'running', game_over = 'game over' }
 STATE = GameStates.running
@@ -111,7 +113,7 @@ function game_restart()
     snakeX, snakeY = 15, 15
     dirX, dirY = 0, 0
     -- tail = {}
-    UP, DOWN, LEFT, RIGHT = false, false, false, false
+    UP, DOWN, LEFT, RIGHT = false, false, false, true
     -- tail_length = 0
     STATE = GameStates.running
 end
