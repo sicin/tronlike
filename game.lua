@@ -1,62 +1,59 @@
 local lume = require("reload.lume")
 
 -- GAME STATES
-GameStates = { PAUSE = 'pause', RUNNING = 'running', GAME_OVER = 'game over' }
-STATE = GameStates.RUNNING
+GAME_STATE = { PAUSE = 'pause', RUNNING = 'running', GAME_OVER = 'game over' }
+CURRENT_STATE = GAME_STATE.RUNNING
 
--- GAME AREA
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
-GAME_AREA_WIDTH = 864
-GAME_AREA_HEIGHT = 576
-BORDER_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
-BORDER_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
-TILE_SIZE = 24
-MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
-MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
+-- GAME AREA CONFIG
+local WINDOW_WIDTH = 1280
+local WINDOW_HEIGHT = 720
+local GAME_AREA_WIDTH = 864
+local GAME_AREA_HEIGHT = 576
+local BORDER_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
+local BORDER_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 
--- SMALL TILES GRID
-SMALL_TILE_SIZE = 6
-MAX_SMALL_TILES_X = GAME_AREA_WIDTH / SMALL_TILE_SIZE
-MAX_SMALL_TILES_Y = GAME_AREA_HEIGHT / SMALL_TILE_SIZE
+-- TILE SIZES
+local TILE_SIZE = 24
+local SMALL_TILE_SIZE = 6
+local MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
+local MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
+local MAX_SMALL_TILES_X = GAME_AREA_WIDTH / SMALL_TILE_SIZE
+local MAX_SMALL_TILES_Y = GAME_AREA_HEIGHT / SMALL_TILE_SIZE
 
--- MINIMAP
+-- MINIMAP CONFIG
 local areaRatio = GAME_AREA_WIDTH / GAME_AREA_HEIGHT
 local MINIMAP_X = 2
 local MINIMAP_Y = 2
-local MINIMAP_WIDTH = 96 -- for example
+local MINIMAP_WIDTH = 96
 local MINIMAP_HEIGHT = MINIMAP_WIDTH / areaRatio
-local MINIMAP_SNAKE_SIZE = SMALL_TILE_SIZE
-
+local MINIMAP_SNAKE_SIZE = SMALL_TILE_SIZE / 2
 local minimapScaleX = MINIMAP_WIDTH / GAME_AREA_WIDTH
 local minimapScaleY = MINIMAP_HEIGHT / GAME_AREA_HEIGHT
 
--- SNAKE
-SNAKE_SIZE = SMALL_TILE_SIZE
-SNAKE_SPEED = 0.02
-SNAKE_STARTING_POS_X = BORDER_X / SNAKE_SIZE
-SNAKE_STARTING_POS_Y = BORDER_Y / SNAKE_SIZE
-
+-- SNAKE CONFIG
+local SNAKE_SIZE = SMALL_TILE_SIZE
+local SNAKE_SPEED = 0.02
+local SNAKE_STARTING_POS_X = BORDER_X / SNAKE_SIZE
+local SNAKE_STARTING_POS_Y = BORDER_Y / SNAKE_SIZE
 local snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
 local snakeTimer = 0
 
 -- DIRECTIONS
-local dirX = 1 -- start moving right by default
-local dirY = 0
+local snakeDirX = 1 -- start moving right by default
+local snakeDirY = 0
 
 -- Drawing functions
+
 local function drawMinimap()
     love.graphics.setColor(1, 0, 1, 0.5)
+    -- Drawing the minimap outline
     love.graphics.rectangle("line", MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH + MINIMAP_SNAKE_SIZE,
         MINIMAP_HEIGHT + MINIMAP_SNAKE_SIZE)
 
     love.graphics.setColor(0, 1, 0, 1)
-
     -- Convert snake position into game-area coordinates
     local snakeWorldX = (snakeX * SNAKE_SIZE) - BORDER_X
     local snakeWorldY = (snakeY * SNAKE_SIZE) - BORDER_Y
-
-    -- Scale these coordinates to the minimap
     local minimapSnakeX = math.floor(MINIMAP_X + snakeWorldX * minimapScaleX)
     local minimapSnakeY = math.floor(MINIMAP_Y + snakeWorldY * minimapScaleY)
 
@@ -64,9 +61,9 @@ local function drawMinimap()
     love.graphics.rectangle("fill", minimapSnakeX, minimapSnakeY, MINIMAP_SNAKE_SIZE, MINIMAP_SNAKE_SIZE)
 end
 
-
 local function drawSnake()
     love.graphics.setColor(0, 1, 0, 1)
+    -- Add BORDER_X, BORDER_Y here since snakeX, snakeY are tile-based coordinates starting from top-left of window
     love.graphics.rectangle("fill", snakeX * SNAKE_SIZE, snakeY * SNAKE_SIZE, SNAKE_SIZE, SNAKE_SIZE)
 end
 
@@ -93,6 +90,8 @@ local function drawSmallGrid()
     end
 end
 
+-- Public Functions
+
 function game_draw()
     drawGrid()
     drawSmallGrid()
@@ -101,23 +100,20 @@ function game_draw()
 end
 
 function game_update(dt)
-    if STATE ~= GameStates.RUNNING then
-        -- If the game is paused or over, do nothing
+    if CURRENT_STATE ~= GAME_STATE.RUNNING then
         return
     end
 
     snakeTimer = snakeTimer + dt
     if snakeTimer >= SNAKE_SPEED then
         -- Move exactly one tile in the current direction
-        snakeX = snakeX + dirX
-        snakeY = snakeY + dirY
+        snakeX = snakeX + snakeDirX
+        snakeY = snakeY + snakeDirY
 
         -- Reset the timer
         snakeTimer = 0
     end
 
-    -- Wrap around logic (optional)
-    -- Example: If you want the snake to wrap around the playing area
     -- local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
     -- local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
     -- if snakeX < 0 then snakeX = maxX end
@@ -128,27 +124,27 @@ end
 
 function game_restart()
     snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
-    dirX, dirY = 1, 0 -- start moving right by default
-    STATE = GameStates.RUNNING
+    snakeDirX, snakeDirY = 1, 0 -- start moving right by default
+    CURRENT_STATE = GAME_STATE.RUNNING
 end
 
 function game_pause()
-    STATE = GameStates.PAUSE
+    CURRENT_STATE = GAME_STATE.PAUSE
 end
 
 function game_unpause()
-    STATE = GameStates.RUNNING
+    CURRENT_STATE = GAME_STATE.RUNNING
 end
 
--- This function will be called from main.lua when a direction key is pressed
+-- Called from main.lua when a direction key is pressed
 function game_setDirection(dx, dy)
     -- Prevent reversing direction:
-    if dx ~= 0 and dirX == -dx then
+    if dx ~= 0 and snakeDirX == -dx then
         return
     end
-    if dy ~= 0 and dirY == -dy then
+    if dy ~= 0 and snakeDirY == -dy then
         return
     end
 
-    dirX, dirY = dx, dy
+    snakeDirX, snakeDirY = dx, dy
 end
