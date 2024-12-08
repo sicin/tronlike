@@ -3,6 +3,10 @@ require('game')
 function love.load()
     love.window.setPosition(500, 50, 1)
     placeholderImage = love.graphics.newImage("placeholder.png")
+
+    futuristicFont = love.graphics.newFont("fonts/BrunoAce-Regular.ttf", 96)
+    fontHeight = futuristicFont:getHeight()
+    love.graphics.setFont(futuristicFont)
 end
 
 function love.draw()
@@ -11,15 +15,19 @@ function love.draw()
     game_draw()
 
     if CURRENT_STATE == GAME_STATE.PAUSE then
-        -- use font:getWidth later
         love.graphics.setColor(0, 1, 0, 1)
-        love.graphics.print("PAUSED", (love.graphics.getWidth() / 2) - 100, (love.graphics.getHeight() / 2) - 100, 0, 4,
-            4)
+        local text = "Paused..."
+        local textWidth = futuristicFont:getWidth(text)
+        love.graphics.print(text, (love.graphics.getWidth() - textWidth) / 2,
+            (love.graphics.getHeight() - fontHeight) / 2, 0)
     end
 
     if CURRENT_STATE == GAME_STATE.GAME_OVER then
         love.graphics.setColor(1, 0, 0, 1)
-        love.graphics.print("LOST", 330, 350, 0, 4, 4)
+        local text = "You lost!"
+        local textWidth = futuristicFont:getWidth(text)
+        love.graphics.print(text, (love.graphics.getWidth() - textWidth) / 2,
+            (love.graphics.getHeight() - fontHeight) / 2, 0)
     end
 end
 

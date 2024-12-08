@@ -36,6 +36,8 @@ local SNAKE_SPEED = 0.02
 -- Instead of starting at PADDING_X / SNAKE_SIZE, we start at 0,0 inside the game area.
 local snakeX, snakeY = 0, 0
 local snakeTimer = 0
+local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
+local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
 
 -- DIRECTIONS
 local snakeDirX = 1 -- start moving right by default
@@ -95,7 +97,7 @@ end
 
 function game_draw()
     drawGrid()
-    drawSmallGrid()
+    -- drawSmallGrid()
     drawSnake()
     drawMinimap()
 end
@@ -113,26 +115,26 @@ function game_update(dt)
 
         -- Reset the timer
         snakeTimer = 0
-    end
-    -- not sure if it should be inside snakeTimer, probably not?
-    local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
-    local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
-    if snakeX < 0 then
-        -- event though it's outside, don't show as if it were
-        snakeX = snakeX + 1
-        CURRENT_STATE = GAME_STATE.GAME_OVER
-    end
-    if snakeX > maxX then
-        snakeX = snakeX - 1
-        CURRENT_STATE = GAME_STATE.GAME_OVER
-    end
-    if snakeY < 0 then
-        snakeY = snakeY + 1
-        CURRENT_STATE = GAME_STATE.GAME_OVER
-    end
-    if snakeY > maxY then
-        snakeY = snakeY - 1
-        CURRENT_STATE = GAME_STATE.GAME_OVER
+
+        -- it might be too hard if this is outside of snake timer
+
+        if snakeX < 0 then
+            -- event though snake head is outside, show as if it hit the wall
+            snakeX = snakeX + 1
+            CURRENT_STATE = GAME_STATE.GAME_OVER
+        end
+        if snakeX > maxX then
+            snakeX = snakeX - 1
+            CURRENT_STATE = GAME_STATE.GAME_OVER
+        end
+        if snakeY < 0 then
+            snakeY = snakeY + 1
+            CURRENT_STATE = GAME_STATE.GAME_OVER
+        end
+        if snakeY > maxY then
+            snakeY = snakeY - 1
+            CURRENT_STATE = GAME_STATE.GAME_OVER
+        end
     end
 end
 
