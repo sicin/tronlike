@@ -1,10 +1,10 @@
 lume = require("reload.lume")
 
--- game states
+-- GAME STATES
 GameStates = { pause = 'pause', running = 'running', game_over = 'game over' }
 STATE = GameStates.running
 
--- game area
+-- GAME AREA
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 GAME_AREA_WIDTH = 864
@@ -16,28 +16,34 @@ TILE_SIZE = 24
 MAX_TILES_X = GAME_AREA_WIDTH / TILE_SIZE
 MAX_TILES_Y = GAME_AREA_HEIGHT / TILE_SIZE
 
--- snake
+-- SNAKE
 -- SNAKE_SIZE = 6 <--- tyle powinno byc, ale problem z przechodzeniemdalej
 SNAKE_SIZE = 6
 SNAKE_SPEED = 0.5
 -- zaczynamy z lewego górnego rogu jeśli snakeX, snakeY = BORDER_X / SNAKE_SIZE, BORDER_Y / SNAKE_SIZE
-local snakeX, snakeY = BORDER_X / SNAKE_SIZE, BORDER_Y / SNAKE_SIZE
+SNAKE_STARTING_POS_X = BORDER_X / SNAKE_SIZE
+SNAKE_STARTING_POS_Y = BORDER_Y / SNAKE_SIZE
+local snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
 
--- directions
+-- DIRECTIONS
 UP = false
 DOWN = false
 LEFT = false
-RIGHT = true
+-- powinno być true, żeby zaczął się ruszać, teraz false do testów
+RIGHT = false
+
 local dirX = 1
 local dirY = 0
 
+-- TAIL, ETC.
 local tailLength = 0
 
 local function drawMinimap()
+    -- minimap snake
+    love.graphics.rectangle("fill", (snakeX / 1.5) - 21, (snakeY / 1.5) - 5, 6, 6)
     -- minimap
-    -- musze zrozumiec co jest czym xd
-    -- love.graphics.rectangle("fill", (snakeX) - 12, (snakeY / 2) - 6, 6, 6)
-    -- love.graphics.rectangle("line", 0, 0, TILE_SIZE * 4, TILE_SIZE * 3)
+    -- powinno być lepiej dostosowane do wymiarów GAME_AREA
+    love.graphics.rectangle("line", 2, 2, TILE_SIZE * 4, TILE_SIZE * 3)
 end
 
 
@@ -110,7 +116,7 @@ function game_update(dt)
 end
 
 function game_restart()
-    snakeX, snakeY = 15, 15
+    snakeX, snakeY = SNAKE_STARTING_POS_X, SNAKE_STARTING_POS_Y
     dirX, dirY = 0, 0
     -- tail = {}
     UP, DOWN, LEFT, RIGHT = false, false, false, true
