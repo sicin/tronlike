@@ -13,7 +13,6 @@ function love.draw()
     if STATE == GameStates.PAUSE then
         -- use font:getWidth later
         love.graphics.setColor(0, 1, 0, 1)
-
         love.graphics.print("PAUSED", (love.graphics.getWidth() / 2) - 100, (love.graphics.getHeight() / 2) - 100, 0, 4,
             4)
     end
@@ -33,16 +32,20 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     end
-    if key == 'left' and STATE == GameStates.RUNNING then
-        LEFT, RIGHT, UP, DOWN = true, false, false, false
-    elseif key == 'right' and STATE == GameStates.RUNNING then
-        LEFT, RIGHT, UP, DOWN = false, true, false, false
-    elseif key == "up" and STATE == GameStates.RUNNING then
-        LEFT, RIGHT, UP, DOWN = false, false, true, false
-    elseif key == 'down' and STATE == GameStates.RUNNING then
-        LEFT, RIGHT, UP, DOWN = false, false, false, true
-    elseif key == 'space' then
-        -- and STATE == GameStates.game_over
+
+    if STATE == GameStates.RUNNING then
+        if key == 'left' then
+            game_setDirection(-1, 0)
+        elseif key == 'right' then
+            game_setDirection(1, 0)
+        elseif key == 'up' then
+            game_setDirection(0, -1)
+        elseif key == 'down' then
+            game_setDirection(0, 1)
+        end
+    end
+
+    if key == 'space' then
         game_restart()
     elseif key == 'p' then
         if STATE == GameStates.RUNNING then
