@@ -68,12 +68,16 @@ function love.keypressed(key)
             game_setDirection(0, -1)
         elseif key == "down" then
             game_setDirection(0, 1)
+        elseif key == 'space' then
+            activateTurbo()
         end
     end
 
-    if key == "space" then
+    if CURRENT_STATE == GAME_STATE.GAME_OVER and key == "return" then
         game_restart()
-    elseif key == "p" then
+    end
+
+    if CURRENT_STATE ~= GAME_STATE.GAME_OVER and key == "p" then
         if CURRENT_STATE == GAME_STATE.RUNNING then
             game_pause()
         elseif CURRENT_STATE == GAME_STATE.PAUSE then

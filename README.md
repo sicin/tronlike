@@ -5,7 +5,8 @@ test game in Love2d (Lua)
 ### To do
 
 - [x] starting positions + and x
-- [ ] trail + turbo
+- [x] trail
+- [ ] turbo
 - [ ] new name and identity
 - [ ] improved sounds
 - [ ] resizable and fullscreenable

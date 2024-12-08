@@ -5,6 +5,7 @@ GAME_STATE = { PAUSE = "pause", RUNNING = "running", GAME_OVER = "game over" }
 CURRENT_STATE = GAME_STATE.RUNNING
 -- needed to not hit itself when going one way and clicking the opposite key in combination with other direction
 local directionChangedThisFrame = false
+TURBO_ACTIVE = false
 
 -- GAME AREA CONFIG
 local WINDOW_WIDTH = 1280
@@ -14,9 +15,17 @@ GAME_AREA_HEIGHT = 576
 PADDING_X = (WINDOW_WIDTH - GAME_AREA_WIDTH) / 2
 PADDING_Y = (WINDOW_HEIGHT - GAME_AREA_HEIGHT) / 2
 
+-- TURBO
+local normalSpeed = 0.02    -- the normal snake speed (time interval)
+local turboStepDistance = 3 -- how much more distance per move during turbo
+local turboDuration = 1.5   -- turbo lasts for 1.5 seconds
+local turboCharges = 3
+local turboTimeLeft = 0
+
 -- SNAKE CONFIG
 local SNAKE_SIZE = 6
-local SNAKE_SPEED = 0.02
+local normalStepDistance = 1
+local snakeSpeed = normalSpeed
 local snakeTimer = 0
 local maxX = (GAME_AREA_WIDTH / SNAKE_SIZE) - 1
 local maxY = (GAME_AREA_HEIGHT / SNAKE_SIZE) - 1
@@ -42,7 +51,7 @@ local STARTING_POSITIONS = {
         { x = 30,        y = 30,        dirX = 1,  dirY = 0 }, -- Top-left, moving right
         { x = maxX - 30, y = 30,        dirX = -1, dirY = 0 }, -- Top-right, moving left
         { x = 30,        y = maxY - 30, dirX = 1,  dirY = 0 }, -- Bottom-left, moving right
-        { x = maxX - 30, y = maxY - 30, dirX = -1, dirY = 0 } -- Bottom-right, moving left
+        { x = maxX - 30, y = maxY - 30, dirX = -1, dirY = 0 }  -- Bottom-right, moving left
     },
     ["SHAPE_+"] = {
         { x = 20,                   y = math.floor(maxY / 2), dirX = 1,  dirY = 0 }, -- Left, moving right
@@ -108,7 +117,7 @@ local function drawSnake()
                 10,
                 10
             )
-            love.graphics.setColor(0, 1, 0, 0.5)
+            love.graphics.setColor(0, 1, 0, 0.6)
             love.graphics.rectangle(
                 "fill",
                 PADDING_X + segment.x * SNAKE_SIZE,
@@ -118,7 +127,7 @@ local function drawSnake()
             )
         else
             -- Draw the body
-            love.graphics.setColor(0, 1, 0, 0.9)
+            love.graphics.setColor(0, 1, 0, 0.8)
             love.graphics.rectangle(
                 "fill",
                 PADDING_X + segment.x * SNAKE_SIZE,
@@ -131,13 +140,13 @@ local function drawSnake()
 end
 
 local function drawGrid()
-    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.setColor(1, 1, 1, 0.9)
     love.graphics.rectangle("line", PADDING_X, PADDING_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
 
     love.graphics.setColor(1, 1, 1, 0.08)
     love.graphics.rectangle("fill", PADDING_X, PADDING_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)
 
-    love.graphics.setColor(1, 1, 1, 0.10)
+    love.graphics.setColor(1, 1, 1, 0.1)
     for y = 1, MAX_TILES_Y do
         for x = 1, MAX_TILES_X do
             love.graphics.rectangle(
@@ -166,10 +175,26 @@ function game_update(dt)
     end
 
     driving:play()
+
+    if TURBO_ACTIVE then
+        turboTimeLeft = turboTimeLeft - dt
+        if turboTimeLeft <= 0 then
+            TURBO_ACTIVE = false
+        end
+    end
+
     snakeTimer = snakeTimer + dt
-    if snakeTimer >= SNAKE_SPEED then
-        local newX = snakeX + snakeDirX
-        local newY = snakeY + snakeDirY
+    if snakeTimer >= snakeSpeed then
+        -- Determine step distance based on turbo
+
+        if TURBO_ACTIVE then
+            normalStepDistance = turboStepDistance
+        else
+            normalStepDistance = 1
+        end
+
+        local newX = snakeX + snakeDirX * normalStepDistance
+        local newY = snakeY + snakeDirY * normalStepDistance
 
         -- Check wall collision
         if newX < 0 or newX > maxX or newY < 0 or newY > maxY then
@@ -200,10 +225,15 @@ end
 
 function game_restart()
     snakeX, snakeY, snakeDirX, snakeDirY = chosenPosition.x, chosenPosition.y, chosenPosition.dirX, chosenPosition.dirY
+    snakeSpeed = normalSpeed
     snakeTrail = {}
     snakeTrailSet = {}
     snakeTrail[#snakeTrail + 1] = { x = snakeX, y = snakeY }
     snakeTrailSet[posKey(snakeX, snakeY)] = true
+
+    turboCharges = 3
+    TURBO_ACTIVE = false
+
     CURRENT_STATE = GAME_STATE.RUNNING
 end
 
@@ -231,4 +261,12 @@ function game_setDirection(dx, dy)
 
     snakeDirX, snakeDirY = dx, dy
     directionChangedThisFrame = true
+end
+
+function activateTurbo()
+    if turboCharges > 0 and not TURBO_ACTIVE then
+        TURBO_ACTIVE = true
+        turboTimeLeft = turboDuration
+        turboCharges = turboCharges - 1
+    end
 end
